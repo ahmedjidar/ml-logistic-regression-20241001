@@ -14,28 +14,29 @@
     - Decision Boundaries
     - Visual Flow
 3. [Mathematical Formulation](#mathematical-formulation)
-    - Logistic Regression Equation
+    - Sigmoid Function Expression
+    - General Logistic Regression Equation & Result
     - Log-Likelihood and Cost Function
     - Gradient Descent for Logistic Regression
-4. [Model Assumptions](#model-assumptions)
+5. [Model Assumptions](#model-assumptions)
     - Independence of Observations
     - Linearity of Independent Variables and Log-Odds
     - Handling Binary and Multiclass Problems
-5. [Fitting the Model](#fitting-the-model)
+6. [Fitting the Model](#fitting-the-model)
     - Maximum Likelihood Estimation (MLE)
     - Training and Optimization Techniques
     - Python Code Example
-6. [Model Evaluation](#model-evaluation)
+7. [Model Evaluation](#model-evaluation)
     - Confusion Matrix
     - Accuracy, Precision, Recall, F1-Score
     - ROC Curve and AUC (Area Under Curve)
-7. [Dealing with Overfitting](#dealing-with-overfitting)
+8. [Dealing with Overfitting](#dealing-with-overfitting)
     - Regularization Techniques (L1, L2)
     - Cross-Validation and Model Selection
-8. [Interpretation of Coefficients](#interpretation-of-coefficients)
+9. [Interpretation of Coefficients](#interpretation-of-coefficients)
     - Odds Ratios and Coefficients
     - Interpreting Categorical and Continuous Variables
-9. [Conclusion](#conclusion)
+10. [Conclusion](#conclusion)
     - Summary of Key Points
     - Insights on Logistic Regression's Importance in Machine Learning
     - Next Steps in the Series
@@ -140,10 +141,102 @@ $$
 
 _**I hope this gives you a big picture before diving into the mathematical formulation :)**_
 
-## [Mathematical Formulation](#mathematical-formulation)
+# [Mathematical Formulation](#mathematical-formulation)
+🔥 Now, let us get into the math behind involvement of log odds in logistic regression.
+
+## Logistic Function Expression
+
+The **logistic function** expresses the probability of success in a logistic regression model. It transforms a linear combination of input features into a value between 0 and 1, representing a probability.
+
+$$
+p = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}}
+$$
+
+Where:
+- $\( p \)$ = probability of success (dependent variable = 1)
+- $\( \beta_0 \)$ = intercept
+- $\( \beta_1 \)$ = coefficient of the independent variable $\( x \)$
+- $\( x \)$ = independent variable
+
+> Simple Interpretation:
+
+- $\( \beta_0 \)$ is the intercept (bias term), and $\( \beta_1, \beta_2, \)$ etc., are the coefficients that determine the influence of the input variables $\( x_1, x_2, \)$ etc., on the outcome.
+
+- $\( e^{-(\beta_0 + \beta_1 x)} \)$: This controls how quickly the probability changes as the input features change. Large positive values in $\( (\beta_0 + \beta_1 x) \)$ make the probability of success approach 1, while large negative values make the probability approach 0.
 
 
-### Logistic Regression Equation
+## Logistic Regression Equation
+- As we said, the odds of an event occurring (success) is defined as the ratio of the probability of success $(\( p \))$ to the probability of failure $(\( 1 - p \))$.
+
+$$
+  \text{Odds} = \frac{p}{1 - p}
+$$
+
+In `logistic regression`, based on the `Logistic Function definition`, the probability of the independent variable corresponding to a success is given by:
+
+$$
+p = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}} = \frac{e^{\beta_0 + \beta_1 x}}{1 + e^{\beta_0 + \beta_1 x}}
+$$
+
+Where:
+- $\( p \)$ = probability of success
+- $\( \beta_0, \beta_1 \)$ = coefficients (weights) of the logistic regression model
+- $\( x \)$ = independent variable
+
+> The probability of the independent variable corresponding to a failure is:
+
+$$
+1 - p = 1 - \frac{e^{\beta_0 + \beta_1 x}}{1 + e^{\beta_0 + \beta_1 x}} = \frac{1}{1 + e^{\beta_0 + \beta_1 x}}
+$$
+
+> Therefore, the odds ratio is:
+
+$$
+\frac{p}{1 - p} = \frac{\frac{e^{\beta_0 + \beta_1 x}}{1 + e^{\beta_0 + \beta_1 x}}}{\frac{1}{1 + e^{\beta_0 + \beta_1 x}}} = e^{\beta_0 + \beta_1 x}
+$$
+
+> Then, to linearize the relationship, we take the natural logarithm of the odds, which is called the **log-odds** or **logit** function:
+
+$$
+\text{Logit}(p) = \log \left( \frac{p}{1 - p} \right) = \beta_0 + \beta_1 x
+$$
+
+🗲 This is the general equation of logistic regression.
+
+## ⚠ IMPORTANT ⚠
+### ✎ Transformation to unbounded scale:
+- The log-odds transform the odds from a scale of (0, +∞) to (-∞, +∞).
+
+- This unbounded scale is indeed compatible with the real number line (ℝ), which is what algebraic polynomials work with.
+
+### ✎ Compatibility with algebraic polynomials:
+- The linear combination of predictors (β₀ + β₁x₁ + β₂x₂ + ... + βₙxₙ) can result in any real number.
+
+- This matches perfectly with the range of the log-odds function, which is also any real number.
+
+### ✎ Application of threshold:
+- Because we're working on an unbounded scale, we can indeed apply any threshold we want.
+
+- Typically, we use a threshold of 0 in log-odds space, which corresponds to a probability of 0.5.
+
+- But we could choose different thresholds if needed for specific applications.
+
+- Therefore, in logistic regression, **WE ASSUME** that the log-odds of the probability of success is a linear combination of the input features $(\( x \))$ and their corresponding coefficients $(\( \beta \))$.
+
+$$
+  \text{Logit}(p) = \beta_0 + \beta_1 x
+$$
+
+- Or (β₀ + β₁x₁ + β₂x₂ + ... + βₙxₙ) for multiple predictors.
+  
+- _**Final Result**_:
+ By applying the logistic function to the **logit function's linear expression assumption**, you return to the original probability 𝑝 of success, on which you can apply a decision boundary based on your use case and classify the outcome.
+
+$$
+p = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}} 
+$$
+
+🗲 That's why the Logistic Function is known as the inverse of the Logit Function.
 
 
 ### Log-Likelihood and Cost Function
