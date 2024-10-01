@@ -10,8 +10,9 @@
     - Applications of Logistic Regression
 2. [Theoretical Foundations](#theoretical-foundations)
     - Sigmoid Function and Log-Odds
-    - The Concept of Odds and Probabilities
+    - Logistic Regression Process
     - Decision Boundaries
+    - Visual Flow
 3. [Mathematical Formulation](#mathematical-formulation)
     - Logistic Regression Equation
     - Log-Likelihood and Cost Function
@@ -77,7 +78,6 @@
 ### What's meant by Discrete here?
 In the context of data, "discrete" refers to values that can be counted and have distinct, separate categories. For example, the outcome of a classification problem, such as whether an email is spam or not, represents a discrete value since it falls into one of the two categories. In contrast, continuous values can take any value within a range, such as height or temperature.
 
-
 ## 🗲 Applications of Logistic Regression
 
 - **Binary Classification**:
@@ -92,15 +92,67 @@ In the context of data, "discrete" refers to values that can be counted and have
   - **Customer Satisfaction Surveys**: Ranks responses as "poor," "fair," "good," or "excellent."
   - **Movie Ratings**: Classifies films on a scale from "1 star" to "5 stars," indicating varying levels of preference.
 
-      
-2. [Theoretical Foundations](#theoretical-foundations)
-    - Sigmoid Function and Log-Odds
-    - The Concept of Odds and Probabilities
-    - Decision Boundaries
-3. [Mathematical Formulation](#mathematical-formulation)
-    - Logistic Regression Equation
-    - Log-Likelihood and Cost Function
-    - Gradient Descent for Logistic Regression
+# [Theoretical Foundations](#theoretical-foundations)
+ⓘ While regression models predict continuous variables, they can also predict probabilities. Logistic regression specifically uses a probability-predicting model to classify outcomes by applying a decision boundary.
+
+## Sigmoid Function and Log-Odds
+### - Probabilities
+- **Definition**: The likelihood of an event occurring, ranging from 0 to 1.
+- **Example**: A 60% chance of rain is a probability of 0.6.
+
+### - Odds
+- **Definition**: The ratio of the probability of an event occurring to the probability of it not occurring.
+- **Formula**: $\text{Odds} = \frac{P(\text{event})}{1 - P(\text{event})}$
+- **Example**: If the probability of rain is $\( P(\text{rain}) = 0.6 \)$, the odds can be calculated as follows:
+
+$$
+\text{Odds} = \frac{0.6}{1 - 0.6} = \frac{0.6}{0.4} = 1.5
+$$
+
+### - Log-Odds (Logit Function)
+- **Definition**: The natural logarithm of the odds.
+- **Purpose**: Transforms probabilities to a scale from negative infinity to positive infinity.
+- **Advantage**: Creates a linear relationship with predictor variables.
+- It's more accurate to say that log-odds **transform odds to an unbounded scale**.
+
+### - Sigmoid Function
+- **Definition**: A function that maps any real-valued number to a value between 0 and 1.
+- **Formula**: $f(x) = \frac{1}{1 + e^{-x}}$
+- **Purpose**: Converts log-odds back into probabilities.
+
+## Logistic Regression Process
+**❶** Calculate log-odds using a linear combination of predictors.
+
+**❷** Use the sigmoid function to convert log-odds to probabilities.
+
+**❸** Apply a decision boundary to classify predictions into discrete categories.
+
+## Decision Boundaries
+- **Definition**: The threshold used to classify predictions into discrete categories.
+- **Example**: If probability > 0.5, predict 1 (event occurs); otherwise, predict 0.
+
+## Visual Flow
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/9a9bf111-fd6e-4da5-9b67-8931b5301d89" alt="lr-flow" width="500"/>
+</p>
+
+**`⌕`** This schema illustrates the flow from input features to the final classification in logistic regression. It shows how the model uses a linear combination of features to calculate log-odds, transforms these to probabilities using the sigmoid function, and then applies a decision boundary to make the final classification.
+
+_**I hope this gives you a big picture before diving into the mathematical formulation :)**_
+
+## [Mathematical Formulation](#mathematical-formulation)
+
+
+### Logistic Regression Equation
+
+
+### Log-Likelihood and Cost Function
+
+
+### Gradient Descent for Logistic Regression
+
+
+
 4. [Model Assumptions](#model-assumptions)
     - Independence of Observations
     - Linearity of Independent Variables and Log-Odds
