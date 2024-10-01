@@ -165,7 +165,7 @@ Where:
 - $\( e^{-(\beta_0 + \beta_1 x)} \)$: This controls how quickly the probability changes as the input features change. Large positive values in $\( (\beta_0 + \beta_1 x) \)$ make the probability of success approach 1, while large negative values make the probability approach 0.
 
 
-## Logistic Regression Equation
+## General Logistic Regression Equation & Result
 - As we said, the odds of an event occurring (success) is defined as the ratio of the probability of success $(\( p \))$ to the probability of failure $(\( 1 - p \))$.
 
 $$
