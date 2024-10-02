@@ -1,4 +1,4 @@
-# ml-linear-regression-20241001
+# ml-logistic-regression-20241001
 `🎓` Machine Learning Series: Understand Logistic Regression
 
 ---
@@ -14,7 +14,7 @@
     - Decision Boundaries
     - Visual Flow
 3. [Mathematical Formulation](#mathematical-formulation)
-    - Sigmoid Function Expression
+    - Logistic Function Expression (Sigmoid)
     - General Logistic Regression Equation & Result
     - Log-Likelihood and Cost Function
     - Gradient Descent for Logistic Regression
@@ -144,7 +144,7 @@ _**I hope this gives you a big picture before diving into the mathematical formu
 # [Mathematical Formulation](#mathematical-formulation)
 🔥 Now, let us get into the math behind involvement of log odds in logistic regression.
 
-## Logistic Function Expression
+## Logistic Function Expression (Sigmoid)
 
 The **logistic function** expresses the probability of success in a logistic regression model. It transforms a linear combination of input features into a value between 0 and 1, representing a probability.
 
@@ -241,15 +241,179 @@ $$
 
 ### Log-Likelihood and Cost Function
 
+#### 1. Binary Classification Likelihood and Log-Likelihood Function in Logistic Regression
+
+| **Concept**               | **Likelihood Function**                                                                                                                       | **Log-Likelihood Function**                                                                                                         |
+|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| **Definition**             | The likelihood function represents the probability of observing the given data, based on a set of model parameters ($\beta$ coefficients).      | The natural logarithm of the likelihood function. Simplifies calculations by converting a product into a sum.                       |
+| **Mathematical Expression**| $L(\beta) = \prod \left( p_i^{y_i} \cdot (1 - p_i)^{1 - y_i} \right)$ <br> Where $p_i$ is the predicted probability and $y_i$ is the actual outcome. | $\log L(\beta) = \sum \left( y_i \cdot \log(p_i) + (1 - y_i) \cdot \log(1 - p_i) \right)$                                            |
+| **Purpose**                | - Helps find the optimal $\beta$ coefficients. <br> - Determines how well the model fits the data.                                              | - Easier computation (sum instead of product). <br> - Avoids underflow issues with small probabilities.                             |
+| **Relationship**           | Works with predicted probabilities using the logistic (sigmoid) function.                                                                     | The log-likelihood is used because it is computationally easier and has nicer mathematical properties for maximization.              |
+
+ⓘ In practice, we usually work with the log-likelihood, but the terms are sometimes used interchangeably because maximizing either will give the same parameter estimates.
+
+
+#### 2. Binary Classification Cost function for a Logistic Regression in comparaison with Linear Regression
+
+| **Property**            | **Logistic Regression**                              | **Linear Regression**                                      |
+|-------------------------|------------------------------------------------------|------------------------------------------------------------|
+| **Cost Function**        | Cross-Entropy (Log-Loss)                             | Mean Squared Error (MSE)                                    |
+| **Why It's Used**        | Directly relates to the likelihood function          | Assumes normally distributed errors; leads to maximum likelihood estimation |
+| **Formula**              | **Cross-Entropy = -1 \* (Log-Likelihood)** = $$-\sum_{i=1}^N \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right]$$ |$\text{MSE} = \frac{1}{N} \sum_{i=1}^N (y_i - \hat{y}_i)^2$ |
+| **Flexibility**          | Can use other cost functions, but **Cross-Entropy** is most common and suitable for **classification** problems | Can also use **MAE**, **Huber Loss**, or others depending on the problem; best for **regression** with normally distributed errors |
+
+#### 3. N-Multiclass Generalization
+| Concept               | Likelihood                                                                 | Log-Likelihood                                                           | Cross-Entropy (Log Loss)                                                 |
+|-----------------------|---------------------------------------------------------------------------|-------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| **Definition**         | Likelihood is the probability of observing the actual outcomes for all classes. | The natural logarithm of the likelihood. Simplifies multiplication into addition. | Negative log-likelihood. Measures how well the predicted probabilities match the actual outcomes. |
+| **Mathematical Form**  | $L(\beta) = \prod_{i=1}^{N} \prod_{c=1}^{C} p_{ic}^{y_{ic}}$          | $\log L(\beta) = \sum_{i=1}^{N} \sum_{c=1}^{C} y_{ic} \log(p_{ic})$ | $- \sum_{i=1}^{N} \sum_{c=1}^{C} y_{ic} \log(p_{ic})$               |
+| **Explanation**        | - For each observation $\( i \)$, multiply the predicted probabilities $\( p_{ic} \)$ raised to the power of the actual outcome $\( y_{ic} \)$ (1 if class is correct, 0 otherwise). | - Take the natural log of the likelihood to simplify calculations and prevent issues with very small probabilities. | - This is the negative sum of log-likelihood, which penalizes incorrect predictions more severely. |
+| **Purpose**            | Helps to find the best model parameters (like weights $\( \beta \))$ that make the observed data most likely. | Log transformation makes it easier to compute and work with. | Used as the cost function in logistic regression for classification tasks. |
+
+#### 4. Explaining the consfusing Transition 😵‍💫
+
+➜ **Going from Bernoulli to Multiclass Classification**
+
+> 1️⃣ Bernoulli Distribution (Binary Case)
+
+In binary classification, we have two outcomes: success (1) and failure (0). The likelihood for a single observation can be represented as:
+
+> Likelihood Function
+
+$$
+L(\beta) = p^y (1 - p)^{(1 - y)}
+$$
+
+Where:
+- $\( p \)$ is the predicted probability of success.
+- $\( y \)$ is the actual outcome (0 or 1).
+
+> **Explanation**:
+- Here, we model the probability of the actual outcome $\( y \)$ given the predicted probability $\( p \)$.
+- The likelihood function calculates how likely the observed outcome is, based on the predicted probability.
+
+> 2️⃣ Extending to Multiclass Classification
+
+When we move to multiclass classification (where there are more than two classes), we have $\( C \)$ classes instead of just two. For each observation $\( i \)$, we want to consider the probability of each class $\( c \)$.
+
+> Likelihood in Multiclass
+
+For each observation, we now calculate the likelihood as a product of probabilities for all classes:
+
+$$
+L(\beta) = \prod_{i=1}^{N} \prod_{c=1}^{C} p_{i}^{y_{ic}}
+$$
+
+Where:
+- $\( p_{ic} \)$ is the predicted probability for observation $\( i \)$ belonging to class $\( c \)$.
+- $\( y_{ic} \)$ is 1 if observation $\( i \)$ belongs to class $\( c \)$, otherwise it is 0.
+
+> **Explanation**:
+- In multiclass, we compute the likelihood for each observation by multiplying the probabilities of the actual class across all classes.
+- The outer product runs over all observations, while the inner product runs over all classes.
+
+> 3️⃣ Why the Double Sum?
+
+> **Log-Likelihood**
+
+To make calculations easier, we take the natural log of the likelihood. When you take the log of a product, it turns into a sum:
+
+$$
+\log L(\beta) = \log \left( \prod_{i=1}^{N} \prod_{c=1}^{C} p_{i}^{y_{ic}} \right) = \sum_{i=1}^{N} \sum_{c=1}^{C} y_{ic} \log(p_{ic})
+$$
+
+> **Explanation**:
+- The outer sum iterates over each observation, while the inner sum iterates over each class for that observation.
+- By using the log-likelihood, we can simplify the optimization process as it turns multiplicative relationships into additive ones, making computations more manageable.
+
+> **Now we got**:
+
+- **Single Product**: For each observation, you multiply the probabilities for each class (hence the inner product).
+- **Double Sum**: When computing the log-likelihood for multiple classes across multiple observations, you sum over each class for each observation, leading to the double summation.
+
+> **Why Is This Useful?**
+
+This structure allows us to capture the contribution of all classes to the likelihood of observing the actual outcomes, making it very suitable for multiclass classification problems.
+
 
 ### Gradient Descent for Logistic Regression
 
+ⓘ In logistic regression, we use gradient descent to optimize our model parameters by minimizing the cost function, which is derived from the log-likelihood.
+
+#### Steps of Gradient Descent:
+
+1. **Define the Cost Function**: 
+   We start with the cost function derived from the log-likelihood for binary classification. The log-likelihood can be expressed as:
+   
+$$
+\ell(\beta) = \sum_{i=1}^{n} \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right]
+$$
+
+   To minimize the negative log-likelihood, we define the cost function as:
+   
+$$
+J(\beta) = -\frac{1}{n} \sum_{i=1}^{n} \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right]
+$$
+
+3. **Calculate the Gradient**: 
+   The gradient of the cost function with respect to the model parameters is computed as:
+   
+$$
+\frac{\partial J(\beta)}{\partial \beta_j} = \frac{1}{n} \sum_{i=1}^{n} (p_i - y_i) x_{ij}
+$$
+
+   Where:
+   - $\( p_i \)$ is the predicted probability for the $\( i \)$-th observation.
+   - $\( y_i \)$ is the actual label for the $\( i \)$-th observation.
+   - $\( x_{ij} \)$ is the value of the $\( j \)$-th feature for the $\( i \)$-th observation.
+
+5. **Update the Parameters**:
+   We update each parameter using the calculated gradient:
+   
+$$
+\beta_j := \beta_j - \alpha \frac{\partial J(\beta)}{\partial \beta_j}
+$$
+
+   Where:
+   - $\( \alpha \)$ is the **learning rate**.
+
+7. **Iterate**:
+   Repeat the process of calculating the gradient and updating the parameters until convergence, meaning the cost function stabilizes.
+
+---
+
+#### ↔ Specificity of the Gradient Expression
+
+| Cost Function       | Gradient Expression                          | Description                                    |
+|---------------------|---------------------------------------------|------------------------------------------------|
+| Cross-Entropy (Logistic Regression) | $\frac{\partial J(\beta)}{\partial \beta_j} = \frac{1}{n} \sum_{i=1}^{n} (p_i - y_i) x_{ij}$ | Measures the difference between predicted probabilities and actual labels. |
+| Mean Squared Error (Linear Regression) | <img src="https://latex.codecogs.com/svg.latex?\color{white}\frac{\partial J(\beta)}{\partial \beta_j} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) x_{ij}" alt="MSE Formula" /> | Measures the difference between predicted values and actual values. |
+
+---
+
+This structure clarifies how gradient descent is used in logistic regression, showing its derivation from the cost function and log-likelihood, while the table highlights the specificity of the gradient expressions for different cost functions and all...
 
 
-4. [Model Assumptions](#model-assumptions)
-    - Independence of Observations
-    - Linearity of Independent Variables and Log-Odds
-    - Handling Binary and Multiclass Problems
+# [Model Assumptions](#model-assumptions)
+
+## Independence of Observations
+
+
+
+## Linearity of Independent Variables and Log-Odds
+
+
+
+## Handling Binary and Multiclass Problems
+
+
+
+
+
+
+
+
+
 5. [Fitting the Model](#fitting-the-model)
     - Maximum Likelihood Estimation (MLE)
     - Training and Optimization Techniques
