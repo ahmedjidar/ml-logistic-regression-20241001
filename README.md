@@ -481,6 +481,8 @@ $$
   - $x_i$ is the vector of independent variables,
   - $\beta_j$ are the coefficients for class $j$.
 
+➥ _Check [multinomial-regression-brief-10042024.md](multinomial-regression-brief-10042024.md) for basic explanation._
+
 ---
 
 ### Summary Table of Assumptions:
