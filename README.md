@@ -19,7 +19,9 @@
     - Log-Likelihood and Cost Function
     - Gradient Descent for Logistic Regression
 5. [Model Assumptions](#model-assumptions)
+    - Binary or Ordinal Dependent Variable
     - Independence of Observations
+    - No Multicollinearity
     - Linearity of Independent Variables and Log-Odds
     - Handling Binary and Multiclass Problems
 6. [Fitting the Model](#fitting-the-model)
@@ -394,23 +396,104 @@ $$
 This structure clarifies how gradient descent is used in logistic regression, showing its derivation from the cost function and log-likelihood, while the table highlights the specificity of the gradient expressions for different cost functions and all...
 
 
-# [Model Assumptions](#model-assumptions)
+## [Model Assumptions](#model-assumptions)
 
-## Independence of Observations
+Unlike linear regression models, logistic regression does not impose strict assumptions regarding the relationship between the independent and dependent variables, nor does it require normality, homoscedasticity, or measurement level constraints often associated with linear regression models using ordinary least squares (OLS) algorithms.
 
+### Key Assumptions in Logistic Regression:
 
+1. **No Strict Linearity Between Independent and Dependent Variables**  
+   Logistic regression does **not** require a linear relationship between the dependent variable and the independent variables. Instead, it models the relationship using the log-odds (logit) transformation.
 
-## Linearity of Independent Variables and Log-Odds
+2. **No Requirement for Normally Distributed Errors**  
+   In logistic regression, the error terms (residuals) do **not** need to follow a normal distribution. This is different from OLS, where normally distributed residuals are often a critical assumption.
 
+3. **No Homoscedasticity Requirement**  
+   Homoscedasticity, where the variance of the residuals is constant across values of the independent variables, is **not** a requirement for logistic regression models.
 
+4. **Dependent Variable Scale**  
+   The dependent variable in logistic regression is **not** measured on an interval or ratio scale; rather, it is categorical, typically binary (0 or 1), or ordinal for ordered logistic regression.
 
-## Handling Binary and Multiclass Problems
+---
 
+**However, several key assumptions still hold true:**
 
+### 1. Binary or Ordinal Dependent Variable
+- In **binary logistic regression**, the dependent variable must be **binary** (i.e., it takes two possible values, such as 0 or 1). For **ordinal logistic regression**, the dependent variable must be **ordinal**, meaning it has a natural order (e.g., "low," "medium," and "high").
 
+  Mathematically, for binary logistic regression:
 
+$$
+Y \in \{0, 1\}
+$$
 
+### 2. Independence of Observations
+- The model assumes that observations are **independent** of each other, which means no repeated measurements or matched-pair data can be used without special handling. Violating this assumption can lead to biased standard errors.
 
+  In mathematical terms:
+
+$$
+P(y_i | y_j) = P(y_i) \quad \text{for} \quad i \neq j
+$$
+
+> In other words, the probability of yiyi​ occurring should remain the same, regardless of whether yjyj​ has occurred or not.
+
+### 3. No Multicollinearity
+- Logistic regression assumes that there is little or no **multicollinearity** among the independent variables, meaning the predictors should not be highly correlated with each other. Multicollinearity can inflate the standard errors of the coefficients and lead to unstable estimates.
+
+  To detect multicollinearity, you can use the **Variance Inflation Factor (VIF)**:
+
+$$
+\text{VIF}_j = \frac{1}{1 - R_j^2}
+$$
+
+  Where $R_j^2$ is the R-squared value of the regression of the $j$-th independent variable on the remaining variables.
+
+### 4. Linearity of Independent Variables and Log-Odds
+- Although logistic regression does not require a linear relationship between the independent variables and the dependent variable, it assumes a linear relationship between the independent variables and the **log-odds** (logit) of the dependent variable.
+
+  The log-odds are represented by the following equation:
+
+$$
+\log \left( \frac{p}{1 - p} \right) = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n
+$$
+
+  Where:
+  - $p$ is the probability of the outcome (e.g., success or 1),
+  - $x_1, \dots, x_n$ are the independent variables, and
+  - $\beta_0, \beta_1, \dots, \beta_n$ are the coefficients of the model.
+
+---
+
+### 5. Handling Binary and Multiclass Problems
+- Logistic regression is primarily used for **binary classification**, where the dependent variable takes on two possible outcomes (e.g., 0 and 1). However, the method can also be extended to handle **multiclass problems** using techniques like **One-vs-All (OvA)** and **Multinomial Logistic Regression**.
+
+  In **One-vs-All** classification, a series of binary logistic regressions is run, each treating one class as the positive class and all other classes as the negative class.
+
+  The **multinomial logistic regression** extends the model to multiple categories (i.e., for more than two classes):
+
+$$
+P(y_i = j) = \frac{e^{\beta_j^T x_i}}{1 + \sum_{k=1}^{K-1} e^{\beta_k^T x_i}}
+$$
+
+  Where:
+  - $K$ is the number of classes,
+  - $x_i$ is the vector of independent variables,
+  - $\beta_j$ are the coefficients for class $j$.
+
+---
+
+### Summary Table of Assumptions:
+
+| Assumption                        | Description                                                                                                | Mathematical Expression                                           |
+|------------------------------------|------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| Binary or Ordinal Dependent Variable | For binary logistic regression, the outcome must be binary; for ordinal logistic regression, it must be ordinal. | $Y \in \{0, 1\}$ |
+| Independence of Observations        | Observations must be independent of one another.                                                           | $P(y_i│y_j) = P(y_i) \quad \text{for} \quad i \neq j$       |
+| No Multicollinearity               | Independent variables should not be highly correlated.                                                      | $\text{VIF}_j = \frac{1}{1 - R_j^2}$                          |
+| Linearity of Log-Odds              | The log-odds of the dependent variable should be linearly related to the independent variables.              | $\log \left( \frac{p}{1 - p} \right) = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n$ |
+| Handling Multiclass Problems       | Logistic regression can be extended to handle multiclass problems using techniques like One-vs-All and Multinomial Logistic Regression. | $P(y_i = j) = \frac{e^{\beta_j^T x_i}}{1 + \sum_{k=1}^{K-1} e^{\beta_k^T x_i}}$ |
+
+---
 
 
 
