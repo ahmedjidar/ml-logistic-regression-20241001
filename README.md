@@ -131,6 +131,10 @@ $$
 **❸** Apply a decision boundary to classify predictions into discrete categories.
 
 ## Decision Boundaries
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/6b9a8766-6c07-47d7-bbe2-3020c14f4152" alt="dcb"/>
+</p>
+
 - **Definition**: The threshold used to classify predictions into discrete categories.
 - **Example**: If probability > 0.5, predict 1 (event occurs); otherwise, predict 0.
 
@@ -202,6 +206,8 @@ $$
 $$
 \text{Logit}(p) = \log \left( \frac{p}{1 - p} \right) = \beta_0 + \beta_1 x
 $$
+
+- Just as we mentionned, the logit introduced an unbounded interval and effectively linearized the relationship!
 
 🗲 This is the general equation of logistic regression.
 
@@ -481,6 +487,8 @@ $$
   - $x_i$ is the vector of independent variables,
   - $\beta_j$ are the coefficients for class $j$.
 
+ℹ️ **Multinomial logistic regression** is known by a variety of other names, including _**`polytomous LR`**_, _**`multiclass LR`**_, _**`softmax regression`**_, _**`multinomial logit` (mlogit)**_, _**`the maximum entropy (MaxEnt) classifier`**_, and _**the `conditional maximum entropy model`**_.
+
 ➥ _Check [multinomial-regression-brief-10042024.md](multinomial-regression-brief-10042024.md) for basic explanation._
 
 ---
@@ -497,16 +505,250 @@ $$
 
 ---
 
+# [Fitting the Model](#fitting-the-model)
+
+## 1. **Maximum Likelihood Estimation (MLE)**
+
+In logistic regression, the goal is to estimate the model parameters that best fit the data. This is done through **Maximum Likelihood Estimation (MLE)**. The MLE method estimates the coefficients by finding the parameter values that maximize the likelihood function.
+
+- **For Binary Logistic Regression**:
+  
+  In binary classification, the likelihood function measures the probability of the observed binary outcomes, given the model's predicted probabilities.
+
+  As we discussed eariler, the **log-likelihood** function for binary logistic regression is expressed as:
+
+$$
+\text{LL}(\beta) = \sum_{i=1}^{n} \left[ y_i \log(\hat{p}_i) + (1 - y_i) \log(1 - \hat{p}_i) \right]
+$$
+
+  Where:
+  - $y_i$ is the observed value (0 or 1) for the $i^{th}$ instance.
+  - $\hat{p}_i$ is the predicted probability that the $i^{th}$ instance belongs to the positive class.
+
+**For Multinomial Logistic Regression**:
+
+  In multinomial logistic regression, the outcome can take more than two categories (e.g., $K$ classes). The likelihood function is extended to handle multiple categories:
+
+$$
+\text{LL}(\beta) = \sum_{i=1}^{n} \sum_{k=1}^{K} y_{ik} \log(\hat{p}_{ik})
+$$
+
+  Where:
+  - $y_{ik}$ is 1 if the $i^{th}$ instance belongs to class $k$, otherwise 0.
+  - $\hat{p}_{ik}$ is the predicted probability that the $i^{th}$ instance belongs to class $k$.
+
+  💡 The goal is still to maximize the log-likelihood function to find the best parameters for the model.
+
+## 2. **Training and Optimization Techniques**
+
+Once we define the log-likelihood function, we use optimization techniques to estimate the parameters.
+
+- **For Binary Logistic Regression**:
+
+  In binary logistic regression, one common approach is to use **Gradient Descent** to maximize the log-likelihood. The parameter update formula is:
+
+$$
+\beta_j = \beta_j - \alpha \frac{\partial}{\partial \beta_j} \text{LL}(\beta)
+$$
+
+  Where:
+  - $\alpha$ is the learning rate (step size).
+  - $\frac{\partial}{\partial \beta_j} \text{LL}(\beta)$ is the gradient of the log-likelihood with respect to the parameter $\beta_j$.
+
+**For Multinomial Logistic Regression**:
+
+  > In the multinomial case, the update rule for **Gradient Descent** is similar but applies to each class separately:
+
+$$
+\beta_{kj} = \beta_{kj} - \alpha \frac{\partial}{\partial \beta_{kj}} \text{LL}(\beta)
+$$
+
+  Here, the model estimates $K - 1$ sets of coefficients (relative to a reference class).
+
+- **Alternative Optimization Methods** (for both binary and multinomial):
+  - **Newton-Raphson Method**: A second-order method that uses both the gradient and the Hessian matrix (second derivative) to find optimal parameter values more quickly. This method converges faster than gradient descent but is computationally expensive for large datasets.
+  - **Stochastic Gradient Descent (SGD)**: A variant of gradient descent that updates the parameters using one or a few examples at a time, which can be faster for very large datasets.
+
+## 3. **Python Code Example**
+
+> Below is a Python code example using `scikit-learn` to fit a logistic regression model:
+
+```python
+# Importing required libraries
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# Example dataset: X (independent variables) and y (dependent variable)
+X = np.array([[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]])
+y = np.array([0, 0, 1, 1, 1])
+
+# Splitting the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Creating a logistic regression model
+model = LogisticRegression(solver="liblinear")
+
+# Fitting the model
+model.fit(X_train, y_train)
+
+# Making predictions
+y_pred = model.predict(X_test)
+
+# Evaluating the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy:.2f}')
+```
+
+> For Multinomial Logistic Regression, the code is quite similar, but you need to specify the multi_class='multinomial' parameter in the LogisticRegression() function:
+
+```python
+# Multinomial Logistic Regression Example
+model = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+model.fit(X_train, y_train)
+```
+
+### `❗` IMPORTANT
+Solver Choice in Logistic Regression.
+
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/7162fa80-004f-485d-9ed4-2e5eb20946a0" alt="warn" width="500"/>
+</p>
+
+When selecting the appropriate **solver** for logistic regression, it's important to consider the following aspects:
+
+- For **small datasets**, the `'liblinear'` solver is efficient.
+- For **large datasets**, `'sag'` and `'saga'` solvers are generally faster.
+- For **multiclass problems**, only the following solvers handle the **multinomial loss**:
+  - `'newton-cg'`
+  - `'sag'`
+  - `'saga'`
+  - `'lbfgs'` (default)
+  
+  **Note:** `'liblinear'` and `'newton-cholesky'` are limited to **binary classification** by default. To apply them to multiclass problems, you can wrap the model with `OneVsRestClassifier`.
+
+- The **'newton-cholesky'** solver is particularly suited for **n_samples >> n_features**, especially when dealing with **one-hot encoded** categorical features. However, be aware that it has a **quadratic memory dependency on n_features**, as it explicitly computes the Hessian matrix.
 
 
-5. [Fitting the Model](#fitting-the-model)
-    - Maximum Likelihood Estimation (MLE)
-    - Training and Optimization Techniques
-    - Python Code Example
-6. [Model Evaluation](#model-evaluation)
-    - Confusion Matrix
-    - Accuracy, Precision, Recall, F1-Score
-    - ROC Curve and AUC (Area Under Curve)
+### `✍️` Key Points:
+
+- MLE is used to estimate parameters in both binary and multinomial logistic regression.
+    
+- Gradient Descent and the Newton-Raphson Method are common optimization techniques for fitting the model.
+    
+- Python's scikit-learn provides an easy interface to fit and evaluate logistic regression models for both binary and multinomial cases.
+
+### Sample Table for Optimization Methods:
+  
+| **Optimization Method**          | **Description**                                                                                 | **Pros**                            | **Cons**                                   |
+|----------------------------------|-------------------------------------------------------------------------------------------------|-------------------------------------|--------------------------------------------|
+| **Gradient Descent**              | Iterative method that updates parameters by moving in the direction of the gradient             | Simple to implement                 | Can be slow, sensitive to learning rate    |
+| **Newton-Raphson/IRLS**           | Second-order method that uses both the gradient and Hessian for faster convergence              | Faster convergence                  | Computationally expensive for large data   |
+| **Stochastic Gradient Descent**   | Variant of gradient descent that updates parameters using one or a few examples at a time       | Faster for large datasets           | More variance in updates, noisier          |
+| **L-BFGS (Limited memory BFGS)**  | Quasi-Newton method for approximating the Hessian, used for large-scale optimization problems   | Efficient for large datasets        | More complex to implement                  |
+
+
+
+
+
+# [Model Evaluation](#model-evaluation)
+
+## 1. Confusion Matrix
+
+- The **Confusion Matrix** is a table used to evaluate the performance of a classification model by comparing the predicted and actual values.
+- It contains four elements:
+  - **True Positives (TP):** Correctly predicted positive cases.
+  - **True Negatives (TN):** Correctly predicted negative cases.
+  - **False Positives (FP):** Incorrectly predicted positive cases (Type I error).
+  - **False Negatives (FN):** Incorrectly predicted negative cases (Type II error).
+
+|               | Predicted Positive | Predicted Negative |
+|---------------|--------------------|--------------------|
+| Actual Positive  | True Positive (TP)  | False Negative (FN) |
+| Actual Negative  | False Positive (FP) | True Negative (TN)  |
+
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/48a19453-f96e-4ba5-9d13-bdd3ada66270" alt="tptnfpfnlr" width="500"/>
+</p>
+
+- True Positives (TP): These tend to be in the top right of the graph, where the predicted probability is high and the actual class is positive.
+  
+- True Negatives (TN): These tend to be in the bottom left of the graph, where the predicted probability is low and the actual class is negative.
+  
+- False Positives (FP): These are typically found in the top left quadrant. The model predicts a high probability (so they're towards the top), but they're actually negative cases (so they're on the left side).
+
+- False Negatives (FN): These are typically found in the bottom right quadrant. The model predicts a low probability (so they're towards the bottom), but they're actually positive cases (so they're on the right side).
+
+## 2. Accuracy, Precision, Recall, F1-Score
+
+### *Accuracy*:
+- Accuracy measures the overall correctness of the model:
+  
+$$
+\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+$$
+
+### *Precision*:
+- Precision is the ratio of correctly predicted positive observations to the total predicted positives:
+
+$$ 
+\text{Precision} = \frac{TP}{TP + FP} 
+$$
+
+### *Recall (Sensitivity)*:
+- Recall is the ratio of correctly predicted positive observations to all actual positives:
+- *Out of all the actual positive cases, how many did we correctly identify?*
+  
+$$ 
+\text{Recall} = \frac{TP}{TP + FN} 
+$$
+
+### *F1-Score:*
+- The F1-Score is the harmonic mean of precision and recall, providing a balance between the two:
+  
+$$ 
+\text{F1-Score} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
+
+<p align="center">
+    <img src="https://images.prismic.io/encord/edfa849b-03fb-43d2-aba5-1f53a8884e6f_image5.png?auto=compress,format" alt="cm" width="700" />
+</p>
+
+## 3. ROC Curve and AUC (Area Under the Curve)
+
+### *ROC Curve:*
+- The **Receiver Operating Characteristic (ROC)** curve plots **True Positive Rate (TPR)** against **False Positive Rate (FPR)** at different classification thresholds.
+  - **True Positive Rate (TPR)** = Recall = $\frac{TP}{TP + FN}$
+  - **False Positive Rate (FPR)** = $\frac{FP}{FP + TN}$
+
+  - True Positive Rate (Recall): How many actual positives did we correctly identify? (i.e., out of all actual positives, how many true positives?)
+  - False Positive Rate: How many false positives did we predict? (i.e., out of all actual negatives, how many did we wrongly classify as positive?)
+
+_**In other words**_:
+
+  - Y-axis (True Positive Rate / Recall): How well we identify the positive cases.
+    
+  - X-axis (False Positive Rate): How many negatives we accidentally labeled as positive.
+
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/8e37b621-f18e-4982-8b0a-eef34e41e0b7" alt="roc" width="400"/>
+</p>
+
+**ⓘ A perfect model would have high recall (catching all true positives) and a low false positive rate (not mistakenly identifying negatives as positives).**
+
+**ⓘ You want a curve that hugs the top-left corner of the graph, indicating high true positive rate and low false positive rate.**
+
+### *AUC (Area Under the Curve):*
+- **AUC** represents the area under the ROC curve and gives a single scalar value to evaluate the model's performance.
+  - A **higher AUC** means the model is better at distinguishing between positive and negative classes.
+
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/10cdfb36-a632-4c93-843e-7fcc87c1bf52" alt="auc" width="400"/>
+</p>
+
+> AUC > 0.5 => Towards good performance.
+
 7. [Dealing with Overfitting](#dealing-with-overfitting)
     - Regularization Techniques (L1, L2)
     - Cross-Validation and Model Selection
