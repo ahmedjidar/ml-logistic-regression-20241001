@@ -46,8 +46,8 @@
 ---
 
 ➥ _**Practical Example**_:
-    > [`⛁` Dataset Overview]()
-    > [`☠` Logistic Regression on Real-World Data (e.g., Disease Prediction)]()
+    > [`⛁` Dataset Overview](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
+    > [`☠` Logistic Regression (Binary) on real-world data example (e.g., Heart Disease Prediction)](ml-logistic-regression-20241001.ipynb)
 
 ---
 
