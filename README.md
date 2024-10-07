@@ -852,7 +852,7 @@ Implementation_
 
 6. **Coursera: Machine Learning with Andrew Ng (Logistic Regression)**
    - [Coursera: Machine Learning by Andrew Ng (Logistic Regression)](https://www.coursera.org/learn/machine-learning/lecture/IuA7Y/logistic-regression)
-   - Andrew Ng's course on machine learning, which includes a section dedicated to logistic regression. It’s an excellent resource for understanding both the math and implementation in various contexts.
+   - Andrew Ng's course on machine learning, which includes a section dedicated to logistic regression. It’s an excellent resource for understanding both the simple math and implementation in various contexts.
 
 7. **Kaggle: Classification Problem Datasets**
    - [Kaggle Datasets](https://www.kaggle.com/datasets)
