@@ -106,7 +106,7 @@ In the context of data, "discrete" refers to values that can be counted and have
 ### - Odds
 - **Definition**: The ratio of the probability of an event occurring to the probability of it not occurring.
 - **Formula**: $\text{Odds} = \frac{P(\text{event})}{1 - P(\text{event})}$
-- **Example**: If the probability of rain is $\( P(\text{rain}) = 0.6 \)$, the odds can be calculated as follows:
+- **Example**: If the probability of rain is $ P(\text{rain}) = 0.6 $, the odds can be calculated as follows:
 
 $$
 \text{Odds} = \frac{0.6}{1 - 0.6} = \frac{0.6}{0.4} = 1.5
