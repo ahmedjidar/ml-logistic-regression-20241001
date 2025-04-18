@@ -1,7 +1,6 @@
 # ml-logistic-regression-20241001
-`🎓` Machine Learning Series: Understand Logistic Regression
 
----
+> `🎓` Machine Learning Series: Understand Logistic Regression
 
 # Index 
 1. [Introduction to Logistic Regression](#introduction-to-logistic-regression)
